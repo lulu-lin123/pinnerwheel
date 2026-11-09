@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>今天吃點什麼好 - 清冰箱食材匹配器</title>
+  <style>
+    body {
+      font-family: 'PingFang TC', 'Microsoft JhengHei', sans-serif;
+      background: #f4f6f7;
+      padding: 15px;
+      margin: 0;
+      color: #2c3e50;
+    }
+    .card {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+      max-width: 500px;
+      margin: 0 auto;
+    }
+    h2 {
+      color: #1B365D;
+      text-align: center;
+      margin-top: 0;
+      margin-bottom: 5px;
+    }
+    .sub-title {
+      text-align: center;
+      font-size: 13px;
+      color: #7f8c8d;
+      margin-bottom: 20px;
+    }
+    .cate-title {
+      font-weight: bold;
+      margin-top: 15px;
+      margin-bottom: 8px;
+      color: #008080;
+      border-bottom: 2px solid #eee;
+      padding-bottom: 4px;
+      font-size: 14px;
+    }
+    .checkbox-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      background: #eef2f5;
+      border-radius: 20px;
+      padding: 6px 12px;
+      cursor: pointer;
+      font-size: 13px;
+      user-select: none;
+      transition: all 0.2s;
+    }
+    .chip input { display: none; }
+    .chip.checked {
+      background: #ff6b6b;
+      color: white;
+      font-weight: bold;
+    }
+    button.btn-match {
+      width: 100%;
+      margin-top: 20px;
+      padding: 12px;
+      background: #1B365D;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 4px 8px rgba(27,54,93,0.2);
+    }
+    button.btn-match:hover { background: #008080; }
+    .result-box { margin-top: 25px; }
+    
+    /* 食譜卡片極簡化設計 */
+    .recipe-card {
+      border: 1px solid #e0e0e0;
+      border-left: 5px solid #008080;
+      border-radius: 10px;
+      padding: 15px;
+      margin-bottom: 15px;
+      background: #fff;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+    }
+    .recipe-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .recipe-title {
+      font-weight: bold;
+      color: #1B365D;
+      font-size: 16px;
+    }
+    .tag {
+      background: #e8f5e9;
+      color: #2e7d32;
+      padding: 3px 8px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: bold;
+    }
+    .recipe-detail {
+      font-size: 13px;
+      color: #555;
+      line-height: 1.5;
+      margin-bottom: 12px;
+    }
+    /* 跳轉按鈕樣式 */
+    .btn-link {
+      display: block;
+      text-align: center;
+      background: #008080;
+      color: white;
+      text-decoration: none;
+      padding: 10px;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: bold;
+      transition: background 0.2s;
+    }
+    .btn-link:hover {
+      background: #1B365D;
+    }
+  </style>
+</head>
+<body>
+
+<div class="card">
+  <h2>🥬 冰箱有什麼？幫你匹配食譜！</h2>
+  <div class="sub-title">💡 勾選手邊現有食材，為您搜尋最適合的 15 分鐘極速料理：</div>
+
+  <!-- 1. 肉類與海鮮 -->
+  <div class="cate-title">🥩 肉類 / 海鮮</div>
+  <div class="checkbox-group">
+    <label class="chip"><input type="checkbox" value="beef">火鍋牛肉片</label>
+    <label class="chip"><input type="checkbox" value="pork">火鍋豬肉片</label>
+    <label class="chip"><input type="checkbox" value="minced_pork">豬絞肉</label>
+    <label class="chip"><input type="checkbox" value="chicken">去骨雞腿/雞胸肉</label>
+    <label class="chip"><input type="checkbox" value="spam">午餐肉/培根/火腿</label>
+    <label class="chip"><input type="checkbox" value="shrimp">蝦仁/蛤蜊</label>
+    <label class="chip"><input type="checkbox" value="salmon">煙燻鮭魚</label>
+  </div>
+
+  <!-- 2. 蔬菜類 -->
+  <div class="cate-title">🥦 蔬菜 / 菇類 / 辛香料</div>
+  <div class="checkbox-group">
+    <label class="chip"><input type="checkbox" value="onion">洋蔥</label>
+    <label class="chip"><input type="checkbox" value="cabbage">高麗菜/青菜</label>
+    <label class="chip"><input type="checkbox" value="kimchi">韓式泡菜</label>
+    <label class="chip"><input type="checkbox" value="tomato">大蕃茄/小蕃茄</label>
+    <label class="chip"><input type="checkbox" value="basil">九層塔</label>
+    <label class="chip"><input type="checkbox" value="cucumber">小黃瓜</label>
+    <label class="chip"><input type="checkbox" value="mushroom">金針菇/菇類</label>
+    <label class="chip"><input type="checkbox" value="chili_pepper">剝皮辣椒</label>
+  </div>
+
+  <!-- 3. 主食與蛋豆類 -->
+  <div class="cate-title">🍚 主食 / 蛋豆腐 / 火鍋料</div>
+  <div class="checkbox-group">
+    <label class="chip"><input type="checkbox" value="rice">白飯</label>
+    <label class="chip"><input type="checkbox" value="udon">烏龍麵</label>
+    <label class="chip"><input type="checkbox" value="pasta">義大利麵</label>
+    <label class="chip"><input type="checkbox" value="ramen">韓式泡麵/鍋燒麵</label>
+    <label class="chip"><input type="checkbox" value="noodle">關廟麵/乾麵/冬粉</label>
+    <label class="chip"><input type="checkbox" value="toast">吐司/貝果/薄餅</label>
+    <label class="chip"><input type="checkbox" value="egg">雞蛋</label>
+    <label class="chip"><input type="checkbox" value="tofu">嫩豆腐/板豆腐</label>
+    <label class="chip"><input type="checkbox" value="cheese">起司片/乳酪絲</label>
+    <label class="chip"><input type="checkbox" value="hotpot_mats">火鍋料/蟹肉棒/關東煮</label>
+  </div>
+
+  <button class="btn-match" onclick="matchRecipes()">開始匹配食譜 🔍</button>
+
+  <div class="result-box" id="results"></div>
+</div>
+
+<script>
+  // 點擊標籤切換樣式
+  document.querySelectorAll('.chip input').forEach(input => {
+    input.addEventListener('change', function() {
+      this.parentElement.classList.toggle('checked', this.checked);
+    });
+  });
+
+  // 完整 20 道懶人食譜資料庫（包含預留網址 url 欄位）
+  const recipes = [
+    {
+      name: "1. 日式醬燒洋蔥牛肉蓋飯",
+      req: ["beef", "onion", "rice"],
+      ing: "火鍋牛肉片 4~5 片、洋蔥 1/4 顆、熱白飯 1 碗",
+      sea: "醬油 1.5 大匙、味醂 1 大匙、水 3 大匙",
+      url: "https://sites.google.com/nkust.edu.tw/foodchoose/%E6%97%A5%E5%BC%8F%E9%86%AC%E7%87%92%E6%B4%8B%E8%94%A5%E7%89%9B%E8%82%89%E8%93%8B%E9%A3%AF" 
+    },
+    {
+      name: "2. 韓式泡菜豬肉炒飯",
+      req: ["pork", "kimchi", "rice"],
+      ing: "火鍋豬肉片 4~5 片、韓式泡菜 1 大握、白飯 1 碗",
+      sea: "醬油 1/2 大匙、香油 1 茶匙",
+      url: "https://sites.google.com/nkust.edu.tw/foodchoose/%E9%9F%93%E5%BC%8F%E6%B3%A1%E8%8F%9C%E8%B1%AC%E8%82%89%E7%82%92%E9%A3%AF"
+    },
+    {
+      name: "3. 泰式打拋豬肉蓋飯",
+      req: ["minced_pork", "basil", "tomato", "rice"],
+      ing: "豬絞肉 2 大匙、九層塔 1 大握、小蕃茄 4 顆、熱白飯 1 碗",
+      sea: "醬油 1 大匙、蠔油 1/2 大匙、檸檬汁 1/2 茶匙",
+      url: "https://sites.google.com/nkust.edu.tw/foodchoose/%E6%B3%B0%E5%BC%8F%E6%89%93%E6%8B%8B%E8%B1%AC%E8%82%89%E8%93%8B%E9%A3%AF"
+    },
+    {
+      name: "4. 滑蛋洋蔥雞肉飯 (親子丼)",
+      req: ["chicken", "onion", "egg", "rice"],
+      ing: "雞腿肉半塊、洋蔥 1/4 顆、雞蛋 2 顆、熱白飯 1 碗",
+      sea: "鰹魚醬油 2 大匙、水 4 大匙",
+      url: "https://sites.google.com/nkust.edu.tw/foodchoose/%E6%BB%91%E8%9B%8B%E6%B4%8B%E8%94%A5%E9%9B%9E%E8%82%89%E9%A3%AF"
+    },
+    {
+      name: "5. 夏威夷餐肉蛋炒飯",
+      req: ["spam", "egg", "cabbage", "rice"],
+      ing: "午餐肉 2 片、雞蛋 2 顆、高麗菜 1 大頁、白飯 1 碗",
+      sea: "醬油 1 大匙、黑胡椒少許",
+      url: "https://sites.google.com/nkust.edu.tw/foodchoose/%E5%A4%8F%E5%A8%81%E5%A4%B7%E9%A4%90%E8%82%89%E8%9B%8B%E7%82%92%E9%A3%AF"
+    },
+    {
+      name: "6. 蟹肉棒奶油烏龍麵",
+      req: ["udon", "hotpot_mats"],
+      ing: "冷凍烏龍麵 1 包、鮮奶 120ml、奶油 1 小塊、蟹肉棒 3 根",
+      sea: "鹽捏一小撮、黑胡椒少許",
+      url: "https://sites.google.com/nkust.edu.tw/foodchoose/%E8%9F%B9%E8%82%89%E6%A3%92%E5%A5%B6%E6%B2%B9%E7%83%8F%E9%BE%8D%E9%BA%B5"
+    },
+    {
+      name: "7. 經典蒜香培根辣味義大利麵",
+      req: ["pasta", "spam"],
+      ing: "義大利麵 1 束、培根 2 片、蒜頭 3 瓣、乾辣椒 1 根",
+      sea: "橄欖油 1.5 大匙、鹽 1 茶匙、黑胡椒少許",
+      url: "https://sites.google.com/nkust.edu.tw/foodchoose/%E7%B6%93%E5%85%B8%E8%92%9C%E9%A6%99%E5%9F%B9%E6%A0%B9%E8%BE%A3%E5%91%B3%E7%BE%A9%E5%A4%A7%E5%88%A9%E9%BA%B5"
+    },
+    {
+      name: "8. 韓式泡菜起司年糕拉麵",
+      req: ["ramen", "kimchi", "cheese", "egg"],
+      ing: "韓式泡麵 1 包、韓式泡菜 1 大握、起司片 1 片、雞蛋 1 顆",
+      sea: "泡麵自帶調味包",
+      url: "https://sites.google.com/nkust.edu.tw/foodchoose/%E9%9F%93%E5%BC%8F%E6%B3%A1%E8%8F%9C%E8%B5%B7%E5%8F%B8%E5%B9%B4%E7%B3%95%E6%8B%89%E9%BA%B5"
+    },
+    {
+      name: "9. 古早味蔥油拌麵",
+      req: ["noodle", "egg"],
+      ing: "關廟麵 1 束、蔥 2 支、雞蛋 1 顆",
+      sea: "醬油 1.5 大匙、醬油膏 1/2 大匙、香油/豬油 1 大匙",
+      url: "https://sites.google.com/nkust.edu.tw/foodchoose/%E5%8F%A4%E6%97%A9%E5%91%B3%E8%94%A5%E6%B2%B9%E6%8B%8C%E9%BA%B5"
+    },
+    {
+      name: "10. 日式照燒雞肉炒烏龍麵",
+      req: ["udon", "chicken", "cabbage", "onion"],
+      ing: "烏龍麵 1 包、雞腿肉半塊、高麗菜 1 大頁、洋蔥 1/4 顆",
+      sea: "醬油 1.5 大匙、烏醋 1 茶匙、糖 1/2 大匙、水 3 大匙",
+      url: "https://sites.google.com/nkust.edu.tw/foodchoose/%E6%97%A5%E5%BC%8F%E7%85%A7%E7%87%92%E9%9B%9E%E8%82%89%E7%82%92%E7%83%8F%E9%BE%8D%E9%BA%B5"
+    },
+    {
+      name: "11. 厚切午餐肉起司蛋吐司",
+      req: ["toast", "spam", "egg", "cheese"],
+      ing: "吐司 2 片、午餐肉 2 厚片、雞蛋 1 顆、起司片 1 片",
+      sea: "美乃滋 1 茶匙、奶油 1 塊",
+      url: "https://sites.google.com/nkust.edu.tw/foodchoose/%E5%8E%9A%E5%88%87%E5%8D%88%E9%A4%90%E8%82%89%E8%B5%B7%E5%8F%B8%E8%9B%8B%E5%90%90%E5%8F%B8"
+    },
+    {
+      name: "12. 三層總匯吐司",
+      req: ["toast", "spam", "egg", "cucumber", "cheese"],
+      ing: "吐司 3 片、火腿 1 片、雞蛋 1 顆、小黃瓜 1/3 支、起司片 1 片",
+      sea: "美乃滋 1 大匙、黑胡椒少許",
+      url: "https://sites.google.com/nkust.edu.tw/foodchoose/%E4%B8%89%E5%B1%A4%E7%B8%BD%E5%8C%AF%E5%90%90%E5%8F%B8"
+    },
+    {
+      name: "13. 鮪魚玉米起司熱壓吐司/壓餅",
+      req: ["toast", "cheese"],
+      ing: "吐司 2 片、水煮鮪魚 2 大匙、玉米粒 2 大匙、乳酪絲 1 大握",
+      sea: "美乃滋 1 茶匙、黑胡椒少許",
+      url: "https://sites.google.com/nkust.edu.tw/foodchoose/%E9%AE%AA%E9%AD%9A%E7%8E%89%E7%B1%B3%E8%B5%B7%E5%8F%B8%E7%86%B1%E5%A3%93%E5%90%90%E5%8F%B8"
+    },
+    {
+      name: "14. 墨西哥起司雞肉薄餅",
+      req: ["toast", "chicken", "cheese", "onion"],
+      ing: "墨西哥餅皮 1 張、即食雞胸肉半塊、乳酪絲 1 大握、洋蔥絲少許",
+      sea: "番茄醬/莎莎醬 1 大匙",
+      url: "https://sites.google.com/nkust.edu.tw/foodchoose/%E5%A2%A8%E8%A5%BF%E5%93%A5%E8%B5%B7%E5%8F%B8%E9%9B%9E%E8%82%89%E8%96%84%E9%A4%85"
+    },
+    {
+      name: "15. 煙燻鮭魚奶油起司貝果",
+      req: ["toast", "salmon", "onion"],
+      ing: "貝果 1 個、煙燻鮭魚 2~3 片、奶油起司 1.5 大匙、洋蔥絲少許",
+      sea: "黑胡椒少許、檸檬汁幾滴",
+      url: "https://sites.google.com/nkust.edu.tw/foodchoose/%E7%85%99%E7%87%BB%E9%AE%AD%E9%AD%9A%E5%A5%B6%E6%B2%B9%E8%B5%B7%E5%8F%B8%E8%B2%9D%E6%9E%9C"
+    },
+    {
+      name: "16. 韓式泡菜豆腐肉片鍋",
+      req: ["pork", "tofu", "kimchi", "mushroom", "egg"],
+      ing: "豬肉片 4~5 片、豆腐半塊、韓式泡菜 1 大握、金針菇半包、雞蛋 1 顆",
+      sea: "韓式辣醬 1 大匙、醬油 1 茶匙",
+      url: "https://sites.google.com/nkust.edu.tw/foodchoose/%E9%9F%93%E5%BC%8F%E6%B3%A1%E8%8F%9C%E8%B1%86%E8%85%90%E8%82%89%E7%89%87%E9%8D%8B"
+    },
+    {
+      name: "17. 剝皮辣椒雞肉冬粉湯",
+      req: ["chicken", "chili_pepper", "noodle"],
+      ing: "去骨雞腿肉半塊、剝皮辣椒 3~4 條＋汁 2 大匙、冬粉 1 卷",
+      sea: "鹽捏一小撮、米酒 1 茶匙",
+      url: "https://sites.google.com/nkust.edu.tw/foodchoose/%E5%89%9D%E7%9A%AE%E8%BE%A3%E6%A4%92%E9%9B%9E%E8%82%89%E5%86%AC%E7%B2%89%E6%B9%AF"
+    },
+    {
+      name: "18. 日式關東煮味噌烏龍湯麵",
+      req: ["udon", "hotpot_mats", "cabbage"],
+      ing: "烏龍麵 1 包、關東煮/火鍋料 4~5 個、高麗菜 1 大頁",
+      sea: "日式味噌 1 大匙、鰹魚粉 1/2 茶匙",
+      url: "https://sites.google.com/nkust.edu.tw/foodchoose/%E6%97%A5%E5%BC%8F%E9%97%9C%E6%9D%B1%E7%85%AE%E5%91%B3%E5%99%8C%E7%83%8F%E9%BE%8D%E6%B9%AF%E9%BA%B5"
+    },
+    {
+      name: "19. 蕃茄牛肉滑蛋湯飯",
+      req: ["beef", "tomato", "egg", "rice"],
+      ing: "牛肉片 4~5 片、大蕃茄 1 顆、雞蛋 1 顆、白飯 1 碗",
+      sea: "番茄醬 1 大匙、鹽 1/2 茶匙",
+      url: "https://sites.google.com/nkust.edu.tw/foodchoose/%E8%95%83%E8%8C%84%E7%89%9B%E8%82%89%E6%BB%91%E8%9B%8B%E6%B9%AF%E9%A3%AF"
+    },
+    {
+      name: "20. 沙茶海鮮什錦鍋燒意麵",
+      req: ["ramen", "shrimp", "cabbage", "egg"],
+      ing: "鍋燒意麵 1 塊、蝦仁 3 隻、蛤蜊 4 顆、高麗菜 1 大頁、雞蛋 1 顆",
+      sea: "沙茶醬 1 大匙、醬油 1/2 大匙",
+      url: "https://sites.google.com/nkust.edu.tw/foodchoose/%E6%B2%99%E8%8C%B6%E6%B5%B7%E9%AE%AE%E4%BB%80%E9%8C%A6%E9%8D%8B%E7%87%92%E6%84%8F%E9%BA%B5"
+    }
+  ];
+
+  function matchRecipes() {
+    const checked = Array.from(document.querySelectorAll('.chip input:checked')).map(i => i.value);
+    const resultDiv = document.getElementById('results');
+    resultDiv.innerHTML = "";
+
+    if (checked.length === 0) {
+      resultDiv.innerHTML = "<p style='text-align:center; color:#e74c3c;'>⚠️ 請至少勾選一項食材喔！</p>";
+      return;
+    }
+
+    // 計算匹配度
+    let matched = recipes.map(r => {
+      let hasCount = r.req.filter(item => checked.includes(item)).length;
+      let score = hasCount / r.req.length;
+      return { ...r, score, hasCount };
+    }).filter(r => r.hasCount > 0).sort((a, b) => b.score - a.score);
+
+    if (matched.length === 0) {
+      resultDiv.innerHTML = "<p style='text-align:center; color:#999;'>找不到符合的食譜，試試多勾選幾項食材吧！</p>";
+      return;
+    }
+
+    matched.forEach(r => {
+      let percent = Math.round(r.score * 100);
+      let html = `
+        <div class="recipe-card">
+          <div class="recipe-header">
+            <span class="recipe-title">${r.name}</span>
+            <span class="tag">匹配度 ${percent}%</span>
+          </div>
+          <div class="recipe-detail">
+            <b>• 食材：</b>${r.ing}<br>
+            <b>• 醬汁：</b>${r.sea}
+          </div>
+          <a href="${r.url}" target="_blank" class="btn-link">📖 查看詳細步驟 ➔</a>
+        </div>
+      `;
+      resultDiv.innerHTML += html;
+    });
+  }
+</script>
+
+</body>
+</html>
